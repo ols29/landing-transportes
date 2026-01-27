@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dois Amigos - Mudanças e Pequenos Fretes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-50">
+
+<nav class="bg-white border-b py-3 shadow-sm sticky top-0 z-40">
+    <div class="container mx-auto px-6 flex justify-between items-center">
+        <a href="/" class="flex flex-col leading-none group">
+            <span class="text-xl font-black text-slate-800 tracking-tighter group-hover:text-blue-600 transition-colors">
+                DOIS AMIGOS
+            </span>
+            <span class="text-[10px] font-black text-blue-600 tracking-[0.3em] mt-0.5 border-t border-slate-100 pt-0.5">
+                TRANSPORTES
+            </span>
+        </a>
+
+        <a href="admin.html" class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-blue-600 transition">
+            <span class="w-2 h-2 bg-slate-200 rounded-full"></span>
+            Painel Admin
+        </a>
+    </div>
+</nav>
+
+    <section class="py-16 px-6">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            
+            <div>
+                <h1 class="text-5xl font-black text-slate-900 leading-tight mb-6">
+                    Sua mudança sem <span class="text-blue-600">estresse</span> e com preço justo.
+                </h1>
+                <p class="text-lg text-slate-600 mb-8 font-medium">
+                    Calculamos seu frete em tempo real. Seguro, rápido e especializado em pequenas mudanças.
+                </p>
+                <div class="flex gap-4">
+                    <div class="flex items-center gap-2 text-sm font-bold text-slate-700">
+                        <span class="bg-green-100 text-green-600 p-1 rounded">✓</span> Atendimento 24h
+                    </div>
+                    <div class="flex items-center gap-2 text-sm font-bold text-slate-700">
+                        <span class="bg-green-100 text-green-600 p-1 rounded">✓</span> Transporte seguro & confiavél
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-2xl p-8 border border-slate-100">
+                <h3 class="text-xl font-bold text-slate-800 mb-6">Simule seu Frete Gratuitamente</h3>
+                
+                <form id="formFrete" class="space-y-4">
+                    <div class="grid grid-cols-1 gap-4">
+                        <input type="text" id="origem" placeholder="Endereço de Origem" required
+                            class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                        
+                        <input type="text" id="destino" placeholder="Endereço de Destino" required
+                            class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="distancia" placeholder="Distância (KM)" required
+                            class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                        
+                        <select id="itens" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="0">Sem itens grandes</option>
+                            <option value="1">1 item grande (Sofá/Geladeira)</option>
+                            <option value="3">Muitos itens (Mudança)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="btnCalcular"
+                        class="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">
+                        CALCULAR AGORA
+                    </button>
+                </form>
+
+                <div id="resultado" class="hidden mt-6 p-6 bg-blue-50 rounded-2xl border border-blue-100 animate-bounce">
+                    <p class="text-blue-600 font-bold text-sm uppercase text-center">Valor Estimado:</p>
+                    <div id="precoValor" class="text-4xl font-black text-slate-800 text-center my-2">R$ 0,00</div>
+                    <button id="btnWhats" class="w-full bg-green-500 text-white py-3 rounded-lg font-bold mt-2 hover:bg-green-600 flex justify-center items-center gap-2">
+                        Confirmar pelo WhatsApp
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+<a id="wa-floating" href="https://wa.me/55419999999" target="_blank" 
+   class="fixed bottom-6 right-6 z-50 transition-all hover:scale-110 active:scale-95 animate-bounce hover:animate-none">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+         alt="WhatsApp Dois Amigos" 
+         class="w-16 h-16 drop-shadow-xl">
+</a>
+</a>
+
+    <script>
+        const form = document.getElementById('formFrete');
+        const resultadoDiv = document.getElementById('resultado');
+        const precoTexto = document.getElementById('precoValor');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+      
+            const dados = {
+                origem: document.getElementById('origem').value,
+                destino: document.getElementById('destino').value,
+                distancia: Number(document.getElementById('distancia').value),
+                itens: Number(document.getElementById('itens').value)
+            };
+
+            try {
+              
+                const response = await fetch('http://localhost:3001/api/orcamento', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+
+                const data = await response.json();
+
+          
+                precoTexto.innerText = `R$ ${data.precoTotal}`;
+                resultadoDiv.classList.remove('hidden'); 
+                
+                // Link zap
+                document.getElementById('btnWhats').onclick = () => {
+                    const texto = `Olá! Vi o orçamento no site. De: ${data.origem} para ${data.destino}. Valor: R$ ${data.precoTotal}. Podemos agendar?`;
+                    window.open(`https://wa.me/55419999999?text=${encodeURIComponent(texto)}`);
+                };
+
+            } catch (error) {
+                alert("Erro: O servidor (Back-end) está ligado?");
+            }
+        });
+    </script>
+</body>
+</html>

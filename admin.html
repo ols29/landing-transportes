@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Administrativo | Dois Amigos Transportes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 p-8">
+    <div class="max-w-5xl mx-auto">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-slate-800">Gerenciamento de Pedidos</h1>
+            <button onclick="carregarPedidos()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                Atualizar Lista
+            </button>
+        </header>
+
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-slate-50 border-b">
+                    <tr>
+                        <th class="p-4 font-semibold text-slate-700">Data</th>
+                        <th class="p-4 font-semibold text-slate-700">Origem/Destino</th>
+                        <th class="p-4 font-semibold text-slate-700">Distância</th>
+                        <th class="p-4 font-semibold text-slate-700">Valor Estimado</th>
+                        <th class="p-4 font-semibold text-slate-700">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-pedidos">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function carregarPedidos() {
+            try {
+                const res = await fetch('http://localhost:3001/api/admin/pedidos');
+                const pedidos = await res.json();
+                
+                const tabela = document.getElementById('tabela-pedidos');
+                tabela.innerHTML = '';
+
+                pedidos.reverse().forEach(p => {
+                    tabela.innerHTML += `
+                        <tr class="border-b hover:bg-slate-50 transition">
+                            <td class="p-4 text-sm text-slate-500">${p.data}</td>
+                            <td class="p-4 font-medium text-slate-800">
+                                <span class="text-blue-600">De:</span> ${p.origem} <br>
+                                <span class="text-orange-600">Para:</span> ${p.destino}
+                            </td>
+                            <td class="p-4">${p.distancia} KM</td>
+                            <td class="p-4 font-bold text-green-600 font-mono">R$ ${p.precoTotal}</td>
+                            <td class="p-4">
+                                <button class="text-blue-600 hover:underline">Ver Detalhes</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error("Erro ao carregar pedidos:", err);
+            }
+        }
+
+
+        carregarPedidos();
+    </script>
+</body>
+</html>
